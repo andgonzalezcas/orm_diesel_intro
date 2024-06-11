@@ -39,4 +39,11 @@ fn main() {
     for post in posts_result {
         println!("se creo el post con titulo: {}", post.title)
     }
+
+    let posts_filter_by_slug_result: Vec<Post> =
+        PostsManager::get_all_posts_by_slug(&mut conn, "tercer-post".to_string());
+
+    for post in posts_filter_by_slug_result {
+        println!("se creo el post con titulo: {}", post.title)
+    }
 }

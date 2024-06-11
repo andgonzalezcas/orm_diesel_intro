@@ -18,4 +18,9 @@ impl PostsManager {
     pub fn get_all_posts(conn: &mut PgConnection) -> Vec<Post> {
         posts.load::<Post>(conn).expect("error al ejecutar la Query posts load")
     }
+
+    // Método para obtener post basado en su slug
+    pub fn get_all_posts_by_slug(conn: &mut PgConnection, filter_slug: String) -> Vec<Post> {
+        posts.filter(slug.eq(filter_slug)).load::<Post>(conn).expect("error al ejecutar la Query posts load")
+    }
 }
