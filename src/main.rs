@@ -1,9 +1,13 @@
 extern crate diesel;
 
-mod models;
-pub mod schema;
+mod models {
+    pub mod post;
+}
+mod manager {
+    pub mod post;
+}
+mod schema;
 
-use diesel::associations::HasTable;
 use diesel::pg::PgConnection;
 use diesel::prelude::*;
 use dotenvy::dotenv;
@@ -16,25 +20,23 @@ fn main() {
     let mut conn: PgConnection =
         PgConnection::establish(&db_url).expect("error conectándose a la base de datos");
 
-    use crate::models::{NewPost, Post};
-    use crate::schema::posts::dsl::*;
+    use crate::manager::post::PostsManager;
+    use crate::models::post::{NewPost, Post};
 
-    let new_post = NewPost{
-        title: "Mi primer blogpost".to_string(),
-        body: "Aqui esta mi descripcion".to_string(),
-        slug: "primer-post".to_string(),
-    };
+    let create_result: Post = PostsManager::create_new_post(
+        &mut conn,
+        NewPost {
+            title: "Mi tercer blogpost".to_string(),
+            body: "Aqui esta mi descripcion".to_string(),
+            slug: "tercer-post".to_string(),
+        },
+    );
 
-    diesel::insert_into(posts::table())
-        .values(&new_post)
-        .get_result::<Post>(&mut conn)
-        .expect("error insertando primer registro");
+    println!("se creo exitosamente el registro: {}", create_result.title);
 
-    let posts_result: Vec<Post> = posts
-        .load::<Post>(&mut conn)
-        .expect("error al ejecutar la Query posts load");
+    let posts_result: Vec<Post> = PostsManager::get_all_posts(&mut conn);
 
     for post in posts_result {
-        println!("{}", post.title);
+        println!("se creo el post con titulo: {}", post.title)
     }
 }
